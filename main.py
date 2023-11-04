@@ -1,4 +1,5 @@
 import threading
+import time
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
@@ -97,13 +98,22 @@ def create_video():
         print(f"Vidéo créée avec succès: {output_path}")
 
 
+def add_transition():
+    global video_clips
+    if len(video_clips) >= 2:
+        transition_duration = askfloat("Durée de la transition", "Saisissez la durée de la transition (en secondes):")
+        if transition_duration:
+            transition_clip = VideoFileClip("path_to_transition_video.mp4").subclip(0, transition_duration)
+            video_clips.append(transition_clip)
+            update_timeline()
+
+
 def rotate_left():
     global rotation_degree
     rotation_degree = (rotation_degree - 90) % 360
     update_timeline()
 
 
-# Fonction pour faire pivoter la vidéo de 90 degrés vers la droite
 def rotate_right():
     global rotation_degree
     rotation_degree = (rotation_degree + 90) % 360
@@ -159,6 +169,12 @@ def update_timeline():
         timeline_canvas.create_text(video_rect_x + video_rect_width / 2, 62, text=duration_text)
         video_rect_x += video_rect_width + 10
 
+        if video_rect_x < canvas_width:
+            transition_duration = 2.0
+            transition_width = int(transition_duration * base_rect_width)
+            timeline_canvas.create_rectangle(video_rect_x, 50, video_rect_x + transition_width, 70, fill="yellow")
+            video_rect_x += transition_width + 5
+
     for audio_clip in audio_clips:
         audio_duration = audio_clip.duration
         audio_rect_width = int(audio_duration * base_rect_width)
@@ -190,9 +206,13 @@ def adjust_rect_width(event):
 
 
 def preview_on_space(event):
+    timeline_canvas.create_rectangle(3, 0, 6, 185, fill="black", tags="time_line_rec")
+    for i in range(timeline_canvas.winfo_width()-10):
+        timeline_canvas.delete("time_line_rec")
+        timeline_canvas.create_rectangle(3+i, 0, 6+i, 185, fill="black", tags="time_line_rec")
+
     if event.keysym == "space":
         preview_video()
-
 
 app = Tk()
 app.geometry("800x420")
@@ -214,14 +234,17 @@ video_button.pack(pady=5)
 audio_button = Button(button_frame, text="Importer un son", command=import_audio, width=button_width)
 audio_button.pack(pady=5)
 
+create_text_button = Button(button_frame, text="Créer du texte", command=create_text_clip, width=button_width, )
+create_text_button.pack(pady=5)
+
+add_transition_button = Button(button_frame, text="Ajouter une transition", command=add_transition, width=button_width)
+add_transition_button.pack(pady=5)
+
 rotate_left_button = Button(button_frame, text="Rotation gauche", command=rotate_left, width=button_width)
 rotate_left_button.pack(pady=5)
 
 rotate_right_button = Button(button_frame, text="Rotation droite", command=rotate_right, width=button_width)
 rotate_right_button.pack(pady=5)
-
-create_text_button = Button(button_frame, text="Créer du texte", command=create_text_clip, width=button_width, )
-create_text_button.pack(pady=5)
 
 remove_video_button = Button(button_frame, text="Supprimer dernier clip", command=remove_last_video,
                              width=button_width)
