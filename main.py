@@ -14,12 +14,10 @@ video_clips = []
 audio_clips = []
 text_clips = []
 
-# Variables pour la prévisualisation vidéo
 preview_clip = None
 preview_label = None
 
-output_format = ".mp4"  # Format par défaut
-
+output_format = ".mp4"
 base_rect_width = 5
 rotation_degree = 0
 
@@ -71,7 +69,7 @@ def remove_last_audio():
 def close_preview():
     global preview_clip
     if preview_clip:
-        preview_clip.close()  # Ferme la prévisualisation
+        preview_clip.close()
         preview_clip = None
 
 
@@ -82,7 +80,7 @@ def preview_video():
 
         if rotation_degree != 0:
             preview_clip = preview_clip.rotate(rotation_degree, unit='deg', resample='bicubic')
-        preview_label.configure(image=None)  # Effacer la prévisualisation précédente
+        preview_label.configure(image=None) 
         preview_label.image = ImageTk.PhotoImage(image=Image.fromarray(preview_clip.get_frame(0)))
         preview_label.configure(image=preview_label.image)
 
@@ -195,10 +193,10 @@ def update_timeline():
 def adjust_rect_width(event):
     global base_rect_width
 
-    if event.state & 4:  # Si la touche Control est enfoncée
-        if event.delta > 0:  # Contrôle + Scroll Up
+    if event.state & 4:
+        if event.delta > 0:  
             base_rect_width += 1
-        else:  # Contrôle + Scroll Down
+        else: 
             if base_rect_width > 1:
                 base_rect_width -= 1
 
