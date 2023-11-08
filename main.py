@@ -5,6 +5,7 @@ from tkinter.simpledialog import askstring, askfloat
 
 from PIL import Image, ImageTk
 from moviepy.editor import *
+from moviepy.video.fx import resize
 
 video_clips = []
 image_clips = []
@@ -109,7 +110,9 @@ def create_video():
         final_video = final_video.set_audio(final_audio)
 
         for image_clip in image_clips:
-            final_video = CompositeVideoClip([final_video, image_clip.set_duration(final_video.duration)])
+            image_clip = image_clip.fx(resize, width=final_video.w, height=final_video.h)
+
+            final_video = concatenate_videoclips([final_video, image_clip])
 
         output_filename_str = output_filename_entry.get()
         output_path = f"{output_filename_str}{output_format}"
@@ -260,6 +263,7 @@ def preview_on_space(event):
 app = Tk()
 app.geometry("850x535")
 app.minsize(800, 420)
+app.resizable(False, False)
 app.title("Logiciel de Montage Vidéo Simple")
 app.configure(bg="#525252")
 
@@ -369,7 +373,7 @@ timeline_canvas.config(xscrollcommand=timeline_scroll.set)
 timeline_canvas.xview_moveto(0)
 
 preview_frame = Frame(app, width=380, height=260, bg="white")
-preview_frame.pack(side=RIGHT, padx=10, pady=10)
+preview_frame.pack(side=RIGHT)
 
 app.bind("<Control-MouseWheel>", adjust_rect_width)
 app.bind("<space>", preview_on_space)
