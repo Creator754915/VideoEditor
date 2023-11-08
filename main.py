@@ -263,7 +263,6 @@ def preview_on_space(event):
 app = Tk()
 app.geometry("850x535")
 app.minsize(800, 420)
-app.resizable(False, False)
 app.title("Logiciel de Montage Vidéo Simple")
 app.configure(bg="#525252")
 
@@ -311,13 +310,23 @@ render_tab = Frame(notebook, bg=bg_color)
 notebook.add(render_tab, text="Rendu")
 
 # Boutons d'importation
-video_button = Button(import_tab, text="Importer une vidéo", command=import_video, width=button_width)
+
+photo4 = Image.open("icons/add_icon.png")
+
+resize_image4 = photo4.resize((35, 35))
+
+img4 = ImageTk.PhotoImage(resize_image4)
+
+video_button = Button(import_tab, text="Importer une vidéo", image=img4, compound=LEFT, command=import_video,
+                      width=160)
 video_button.pack(pady=5)
 
-image_button = Button(import_tab, text="Importer une image", command=import_image, width=button_width)
+image_button = Button(import_tab, text="Importer une image", image=img4, compound=LEFT, command=import_image,
+                      width=160)
 image_button.pack(pady=5)
 
-audio_button = Button(import_tab, text="Importer un son", command=import_audio, width=button_width)
+audio_button = Button(import_tab, text="Importer un son", image=img4, compound=LEFT, command=import_audio,
+                      width=160)
 audio_button.pack(pady=5)
 
 create_text_button = Button(import_tab, text="Créer du texte", command=create_text_clip, width=button_width, )
@@ -327,21 +336,38 @@ add_transition_button = Button(import_tab, text="Ajouter une transition", comman
 add_transition_button.pack(pady=5)
 
 # Boutons de modification
-rotate_left_button = Button(edit_tab, text="Rotation gauche", command=rotate_left, width=button_width)
+
+photo = Image.open("icons/speed_icon.png")
+photo2 = Image.open("icons/delete_icon.png")
+photo3 = Image.open("icons/rotate_left_icon.png")
+
+resize_image = photo.resize((35, 35))
+resize_image2 = photo2.resize((35, 35))
+resize_image3 = photo3.resize((35, 35))
+
+img = ImageTk.PhotoImage(resize_image)
+img2 = ImageTk.PhotoImage(resize_image2)
+img3 = ImageTk.PhotoImage(resize_image3)
+
+rotate_left_button = Button(edit_tab, text="Rotation gauche", image=img3, compound=LEFT, command=rotate_left,
+                            width=160)
 rotate_left_button.pack(pady=5)
 
-rotate_right_button = Button(edit_tab, text="Rotation droite", command=rotate_right, width=button_width)
+rotate_right_button = Button(edit_tab, text="Rotation droite", image=img3, compound=LEFT, command=rotate_right,
+                             width=160)
 rotate_right_button.pack(pady=5)
 
-speed_button = Button(edit_tab, text="Modifier la vitesse", command=change_video_speed, width=button_width)
+
+speed_button = Button(edit_tab, text="Modifier la vitesse", image=img, compound=LEFT, command=change_video_speed,
+                      width=160)
 speed_button.pack(pady=5)
 
-remove_video_button = Button(edit_tab, text="Supprimer dernier clip", command=remove_last_video,
-                             width=button_width)
+remove_video_button = Button(edit_tab, text="Supprimer dernier clip", image=img2, compound=LEFT, command=remove_last_video,
+                             width=160)
 remove_video_button.pack(pady=5)
 
-remove_audio_button = Button(edit_tab, text="Supprimer dernier son", command=remove_last_audio,
-                             width=button_width)
+remove_audio_button = Button(edit_tab, text="Supprimer dernier son", image=img2, compound=LEFT, command=remove_last_audio,
+                             width=160)
 remove_audio_button.pack(pady=5)
 
 create_video_button = Button(render_tab, text="Créer la vidéo", command=create_video, width=button_width)
