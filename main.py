@@ -3,7 +3,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from tkinter.simpledialog import askstring, askfloat
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 from moviepy.editor import *
 from moviepy.video.fx import resize
 
@@ -325,7 +325,7 @@ image_button = Button(import_tab, text="Importer une image", image=img4, compoun
                       width=160)
 image_button.pack(pady=5)
 
-audio_button = Button(import_tab, text="Importer un son", image=img4, compound=LEFT, command=import_audio,
+audio_button = Button(import_tab, text="Importer un audio", image=img4, compound=LEFT, command=import_audio,
                       width=160)
 audio_button.pack(pady=5)
 
@@ -340,20 +340,28 @@ add_transition_button.pack(pady=5)
 photo = Image.open("icons/speed_icon.png")
 photo2 = Image.open("icons/delete_icon.png")
 photo3 = Image.open("icons/rotate_left_icon.png")
+photo5 = Image.open('icons/rotate_left_icon.png')
+photo5_r = ImageOps.mirror(photo5)
+photo5_r.save('icons/rotate_right_icon.png', quality=-95)
+
+photo5 = Image.open('icons/rotate_right_icon.png')
 
 resize_image = photo.resize((35, 35))
 resize_image2 = photo2.resize((35, 35))
 resize_image3 = photo3.resize((35, 35))
+resize_image5 = photo5.resize((35, 35))
+
 
 img = ImageTk.PhotoImage(resize_image)
 img2 = ImageTk.PhotoImage(resize_image2)
 img3 = ImageTk.PhotoImage(resize_image3)
+img5 = ImageTk.PhotoImage(resize_image5)
 
 rotate_left_button = Button(edit_tab, text="Rotation gauche", image=img3, compound=LEFT, command=rotate_left,
                             width=160)
 rotate_left_button.pack(pady=5)
 
-rotate_right_button = Button(edit_tab, text="Rotation droite", image=img3, compound=LEFT, command=rotate_right,
+rotate_right_button = Button(edit_tab, text="Rotation droite", image=img5, compound=LEFT, command=rotate_right,
                              width=160)
 rotate_right_button.pack(pady=5)
 
