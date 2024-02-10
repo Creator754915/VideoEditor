@@ -90,11 +90,13 @@ def preview_video():
     if video_clips:
         preview_clip = concatenate_videoclips(video_clips)
 
-        if rotation_degree != 0:
-            preview_clip = preview_clip.rotate(rotation_degree, unit='deg', resample='bicubic')
-        preview_label.configure(image=None)
-        preview_label.image = ImageTk.PhotoImage(image=Image.fromarray(preview_clip.get_frame(0)))
-        preview_label.configure(image=preview_label.image)
+        root = Tk()
+
+        root.title("Preview Video")
+        root.geometry("600x400")
+        root.resizable(False, False)
+
+        root.mainloop()
 
 
 def create_video():
@@ -109,14 +111,18 @@ def create_video():
 
         final_video = final_video.set_audio(final_audio)
 
-        for image_clip in image_clips:
-            image_clip = image_clip.fx(resize, width=final_video.w, height=final_video.h)
+        # for image_clip in image_clips:
+        #    image_clip = image_clip.fx(resize, width=final_video.w, height=final_video.h)
 
-            final_video = concatenate_videoclips([final_video, image_clip])
+        final_video = concatenate_videoclips([final_video])
 
         output_filename_str = output_filename_entry.get()
         output_path = f"{output_filename_str}{output_format}"
-        final_video.write_videofile(output_path, codec="libx264")
+
+        fps = slider2.get()
+
+        final_video.write_videofile(output_path, fps=fps, codec="libx264")
+
         print(f"Vidéo créée avec succès : {output_path}")
 
 
@@ -261,8 +267,8 @@ def preview_on_space(event):
 
 
 app = Tk()
-app.geometry("850x535")
-app.minsize(800, 420)
+app.geometry("900x535")
+app.minsize(900, 420)
 app.title("Logiciel de Montage Vidéo Simple")
 app.configure(bg="#525252")
 
@@ -386,8 +392,15 @@ preview_button.pack(pady=5)
 
 output_filename_label = Label(render_tab, text="Nom de la vidéo finale:")
 output_filename_label.pack(pady=5)
-output_filename_entry = Entry(render_tab)
+output_filename_entry = Entry(render_tab, width=button_width)
 output_filename_entry.pack(pady=5)
+
+label_fps = Label(render_tab, text="FPS", font=("New Time Roman", 12))
+label_fps.pack()
+
+slider2 = Scale(render_tab, from_=8, to=180, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
+slider2.set(25)
+slider2.pack(pady=5)
 
 output_format_label = Label(render_tab, text="Format de sortie:")
 output_format_label.pack()
