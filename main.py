@@ -270,9 +270,10 @@ app = Tk()
 app.geometry("900x535")
 app.minsize(900, 420)
 app.title("Logiciel de Montage Vidéo Simple")
-app.configure(bg="#525252")
+app.configure(bg=bg_color)
 
-menubar = Menu(app, background="#333333")
+
+menubar = Menu(app, background=bg_color2)
 
 filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="New")
@@ -301,7 +302,7 @@ menubar.add_cascade(label="Help", menu=helpmenu)
 
 app.config(menu=menubar)
 
-button_width = 20
+button_width = 23
 
 notebook = ttk.Notebook(app, width=320, padding=2)
 notebook.place(x=0, y=0)
@@ -335,7 +336,7 @@ audio_button = Button(import_tab, text="Importer un audio", image=img4, compound
                       width=160)
 audio_button.pack(pady=5)
 
-create_text_button = Button(import_tab, text="Créer du texte", command=create_text_clip, width=button_width, )
+create_text_button = Button(import_tab, text="Créer du texte", command=create_text_clip, width=button_width)
 create_text_button.pack(pady=5)
 
 add_transition_button = Button(import_tab, text="Ajouter une transition", command=add_transition, width=button_width)
@@ -384,25 +385,30 @@ remove_audio_button = Button(edit_tab, text="Supprimer dernier son", image=img2,
                              width=160)
 remove_audio_button.pack(pady=5)
 
+# Créer la video
+
 create_video_button = Button(render_tab, text="Créer la vidéo", command=create_video, width=button_width)
 create_video_button.pack(pady=5)
 
 preview_button = Button(render_tab, text="Prévisualiser la vidéo", command=preview_video, width=button_width)
 preview_button.pack(pady=5)
 
-output_filename_label = Label(render_tab, text="Nom de la vidéo finale:")
+output_filename_label = Label(render_tab, text="Nom de la vidéo finale:", font=("New Time Roman", 12),
+                              fg=text_color, bg=bg_color,
+                              width=button_width)
 output_filename_label.pack(pady=5)
 output_filename_entry = Entry(render_tab, width=button_width)
 output_filename_entry.pack(pady=5)
 
-label_fps = Label(render_tab, text="FPS", font=("New Time Roman", 12))
+label_fps = Label(render_tab, text="FPS", fg=text_color, bg=bg_color, font=("New Time Roman", 12))
 label_fps.pack()
 
 slider2 = Scale(render_tab, from_=8, to=180, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
 slider2.set(25)
 slider2.pack(pady=5)
 
-output_format_label = Label(render_tab, text="Format de sortie:")
+output_format_label = Label(render_tab, text="Format de sortie:", font=("New Time Roman", 12),
+                            fg=text_color, bg=bg_color)
 output_format_label.pack()
 output_format_combobox = ttk.Combobox(render_tab, values=[".mp4", ".avi", ".mov"])
 output_format_combobox.set(".mp4")
