@@ -1,11 +1,14 @@
+import json
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 from tkinter.simpledialog import askstring, askfloat
+from tkinter.ttk import Combobox
 
 from PIL import Image, ImageTk, ImageOps
 from moviepy.editor import *
-from moviepy.video.fx import resize
+from moviepy.video.VideoClip import TextClip
+from moviepy.video.fx import *
 
 video_clips = []
 image_clips = []
@@ -25,6 +28,33 @@ bg_color2 = "#333333"
 text_color = "white"
 button_color = "#525252"
 button_text_color = "white"
+
+effects = [
+    "accel_decel", "blackwhite", "blink", "crop", "even_size", "fadein",
+    "fadeout", "freeze", "freeze_region", "gamma_corr", "headblur",
+    "invert_colors", "loop", "lum_contrast", "make_loopable", "margin",
+    "mask_and", "mask_color", "mask_or", "mirror_x", "mirror_y",
+    "multiply_color", "multiply_speed", "painting", "resize", "rotate",
+    "scroll", "supersample", "time_mirror", "time_symmetrize"
+]
+
+
+def save_project():
+    try:
+        with open('project.json', 'r') as mon_fichier:
+            data = json.load(mon_fichier)
+    except FileNotFoundError:
+        data = {}
+
+    data = {
+        "video_clips": dict(video_clips),
+        "images_clips": dict(image_clips),
+        "sound_tracks": dict(audio_clips),
+        "text": dict(text_clips)
+    }
+
+    with open('project.json', 'w') as mon_fichier:
+        json.dump(data, mon_fichier, indent=4)
 
 
 def import_video():
@@ -110,11 +140,20 @@ def create_video():
         final_audio = concatenate_audioclips(audio_clips)
 
         final_video = final_video.set_audio(final_audio)
+        final_video.crossfadein(3.0)
+        final_video.fx(fx_combo_box.get())
+
+        final_video.volumex(master_slider.get())
+
+        txt_clip = TextClip("GeeksforGeeks", fontsize=75, color='black')
+
+        # setting position of text in the center and duration will be 10 seconds
+        txt_clip = txt_clip.set_pos(0, 0).set_duration(10).crossfadein(2.0).crossfadeout(2.0)
 
         # for image_clip in image_clips:
         #    image_clip = image_clip.fx(resize, width=final_video.w, height=final_video.h)
 
-        final_video = concatenate_videoclips([final_video])
+        final_video = concatenate_videoclips([final_video, txt_clip])
 
         output_filename_str = output_filename_entry.get()
         output_path = f"{output_filename_str}{output_format}"
@@ -199,10 +238,7 @@ def update_timeline():
         timeline_canvas.create_rectangle(40, y1, canvas_width, y2, fill="#525252", outline="lightgreen",
                                          tags="background")
 
-    video_rect_x = 42
-    audio_rect_x = 42
-    text_rect_x = 42
-    image_rect_x = 42
+    video_rect_x, audio_rect_x, text_rect_x, image_rect_x = 42, 42, 42, 42
 
     for video_clip in video_clips:
         video_duration = video_clip.duration
@@ -223,8 +259,8 @@ def update_timeline():
         image_rect_width = int(image_duration * base_rect_width)
         timeline_canvas.create_rectangle(image_rect_x, 26, image_rect_x + image_rect_width, 46, fill="#cc008b")
         duration_text = f"{image_duration:.1f}s"
-        timeline_canvas.create_text(audio_rect_x + image_rect_width / 2, 36, text=duration_text)
-        image_rect_x += image_rect_width
+        timeline_canvas.create_text(image_rect_x + image_rect_width / 2, 36, text=duration_text)
+        image_rect_x += image_rect_width + 2
 
     for audio_clip in audio_clips:
         audio_duration = audio_clip.duration
@@ -278,7 +314,7 @@ menubar = Menu(app, background=bg_color2)
 filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="New")
 filemenu.add_command(label="Open")
-filemenu.add_command(label="Save")
+filemenu.add_command(label="Save", command=save_project)
 filemenu.add_separator()
 filemenu.add_command(label="Import Video", command=import_video)
 filemenu.add_command(label="Import Image", command=import_image)
@@ -304,21 +340,27 @@ app.config(menu=menubar)
 
 button_width = 23
 
-notebook = ttk.Notebook(app, width=320, padding=2)
+notebook = ttk.Notebook(app, width=350, padding=2)
 notebook.place(x=0, y=0)
 
 import_tab = Frame(notebook, bg=bg_color)
-notebook.add(import_tab, text="Importation")
+notebook.add(import_tab, text="Import")
 
 edit_tab = Frame(notebook, bg=bg_color)
-notebook.add(edit_tab, text="Modification")
+notebook.add(edit_tab, text="Video Config")
+
+audio_tab = Frame(notebook, bg=bg_color)
+notebook.add(audio_tab, text="Audio Track")
+
+fx_tab = Frame(notebook, bg=bg_color)
+notebook.add(fx_tab, text="Visual Effects")
 
 render_tab = Frame(notebook, bg=bg_color)
-notebook.add(render_tab, text="Rendu")
+notebook.add(render_tab, text="Render")
 
 # Boutons d'importation
 
-photo4 = Image.open("icons/add_icon.png")
+photo4 = Image.open("../icons/add_icon.png")
 
 resize_image4 = photo4.resize((35, 35))
 
@@ -344,14 +386,14 @@ add_transition_button.pack(pady=5)
 
 # Boutons de modification
 
-photo = Image.open("icons/speed_icon.png")
-photo2 = Image.open("icons/delete_icon.png")
-photo3 = Image.open("icons/rotate_left_icon.png")
-photo5 = Image.open('icons/rotate_left_icon.png')
+photo = Image.open("../icons/speed_icon.png")
+photo2 = Image.open("../icons/delete_icon.png")
+photo3 = Image.open("../icons/rotate_left_icon.png")
+photo5 = Image.open('../icons/rotate_left_icon.png')
 photo5_r = ImageOps.mirror(photo5)
 photo5_r.save('icons/rotate_right_icon.png', quality=-95)
 
-photo5 = Image.open('icons/rotate_right_icon.png')
+photo5 = Image.open('../icons/rotate_right_icon.png')
 
 resize_image = photo.resize((35, 35))
 resize_image2 = photo2.resize((35, 35))
@@ -384,6 +426,27 @@ remove_video_button.pack(pady=5)
 remove_audio_button = Button(edit_tab, text="Supprimer dernier son", image=img2, compound=LEFT, command=remove_last_audio,
                              width=160)
 remove_audio_button.pack(pady=5)
+
+# Audio tab
+
+Label(audio_tab, text="Master Audio", fg=text_color, bg=bg_color, font=("New Time Roman", 12)).pack()
+
+master_slider = Scale(audio_tab, from_=100, to=0, orient=VERTICAL, activebackground="gray", length=200, bd=0)
+master_slider.set(80)
+master_slider.pack(pady=5)
+
+Label(audio_tab, text="Track 2 Audio", fg=text_color, bg=bg_color, font=("New Time Roman", 12)).pack()
+
+track2_slider = Scale(audio_tab, from_=100, to=0, orient=VERTICAL, activebackground="gray", length=200, bd=0)
+track2_slider.set(80)
+track2_slider.pack(pady=5)
+
+# Visual Effect
+
+Label(fx_tab, text="List of Fx", font=("New Time Roman", 12)).pack()
+
+fx_combo_box = Combobox(fx_tab, state="readonly", values=effects)
+fx_combo_box.pack()
 
 # Créer la video
 
