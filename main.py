@@ -147,7 +147,6 @@ def create_video():
 
         txt_clip = TextClip("GeeksforGeeks", fontsize=75, color='black')
 
-        # setting position of text in the center and duration will be 10 seconds
         txt_clip = txt_clip.set_pos(0, 0).set_duration(10).crossfadein(2.0).crossfadeout(2.0)
 
         # for image_clip in image_clips:
